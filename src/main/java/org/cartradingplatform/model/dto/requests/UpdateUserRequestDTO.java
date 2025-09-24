@@ -1,6 +1,5 @@
-package org.cartradingplatform.model.dto.response;
+package org.cartradingplatform.model.dto.requests;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 import org.cartradingplatform.model.enums.Gender;
 import org.cartradingplatform.model.enums.RoleName;
@@ -8,13 +7,13 @@ import org.cartradingplatform.model.enums.RoleName;
 import java.time.LocalDate;
 
 @Data
-public class ProfileDTO {
+public class UpdateUserRequestDTO {
     private Long id;
     private String email;
     private String fullName;
     private String numberPhone;
     private LocalDate dateOfBirth;
     private Gender gender;
-    private RoleName role;
+    private RoleName roleName;
     private Boolean isActive;
 }

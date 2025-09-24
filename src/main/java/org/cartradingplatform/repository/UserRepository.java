@@ -14,26 +14,19 @@ import java.util.Optional;
 @Repository
 
 public interface UserRepository extends JpaRepository<UsersEntity,Long> {
-//    Optional<UsersEntity> findUserByEmail(String email);
     Optional<UsersEntity> findByEmail(String email);
     boolean existsByEmail(String email);
 
-    Page<UsersEntity> findAllByRoleName(RoleName roleName, Pageable pageable);
+    @Query("SELECT u FROM UsersEntity u " +
+            "WHERE (:email IS NULL OR u.email LIKE %:email%) " +
+            "AND (:isActive IS NULL OR u.isActive = :isActive) " +
+            "AND ( " +
+            "    (:roleName IS NULL AND u.roleName IN (org.cartradingplatform.model.enums.RoleName.BUYER, org.cartradingplatform.model.enums.RoleName.SELLER)) " +
+            "    OR (:roleName IS NOT NULL AND u.roleName = :roleName) " +
+            ")")
+    Page<UsersEntity> findAllWithFilters(@Param("email") String email,
+                                         @Param("roleName") RoleName roleName,
+                                         @Param("isActive") Boolean isActive,
+                                         Pageable pageable);
 
-    @Query("""
-           SELECT u FROM UsersEntity u
-           WHERE u.roleName = :role
-             AND (:isActive IS NULL OR u.isActive = :isActive)
-             AND (
-                 :keyword IS NULL 
-                 OR LOWER(u.fullName) LIKE LOWER(CONCAT('%', :keyword, '%')) 
-                 OR LOWER(u.email) LIKE LOWER(CONCAT('%', :keyword, '%'))
-             )
-           """)
-    Page<UsersEntity> findAllCustomers(@Param("role") RoleName role,
-                                       @Param("keyword") String keyword,
-                                       @Param("isActive") Boolean isActive,
-                                       Pageable pageable);
-
-    Optional<UsersEntity> findUsersById(Long id);
 }

@@ -56,6 +56,9 @@ public class AuthServiceImpl implements AuthService {
         UsersEntity user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new UsersException("User not found"));
 
+        if (!Boolean.TRUE.equals(user.isActive())) {
+            throw new UsersException("Tài khoản đã bị khóa. Đăng nhập thất bại");
+        }
 
         Map<String, Object> response = new HashMap<>();
         response.put("token", token);
