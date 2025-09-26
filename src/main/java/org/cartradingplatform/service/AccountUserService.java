@@ -1,6 +1,7 @@
 package org.cartradingplatform.service;
 
 import org.cartradingplatform.model.dto.PageResponse;
+import org.cartradingplatform.model.dto.requests.ResetPassword;
 import org.cartradingplatform.model.dto.requests.UpdateUserRequestDTO;
 import org.cartradingplatform.model.dto.response.ProfileDTO;
 import org.cartradingplatform.security.CustomUserDetails;
@@ -12,6 +13,7 @@ public interface AccountUserService {
     PageResponse<ProfileDTO> getAllUsers(String email, String roleName, Boolean isActive, Pageable pageable);
     ProfileDTO createUser(ProfileDTO dto);
     ProfileDTO updateUserStatus(Long id, boolean active);
+    void resetPassword(Long id, ResetPassword resetPassword);
 
 
 }

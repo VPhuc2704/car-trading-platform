@@ -3,6 +3,7 @@ package org.cartradingplatform.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.cartradingplatform.exceptions.UsersException;
 import org.cartradingplatform.model.dto.PageResponse;
+import org.cartradingplatform.model.dto.requests.ResetPassword;
 import org.cartradingplatform.model.dto.requests.UpdateUserRequestDTO;
 import org.cartradingplatform.model.dto.response.ProfileDTO;
 import org.cartradingplatform.model.entity.UsersEntity;
@@ -112,5 +113,17 @@ public class AccountUserServiceImpl implements AccountUserService {
         return userMapper.toDTO(saved);
     }
 
+    @Override
+    public void resetPassword(Long id, ResetPassword resetPassword) {
+        UsersEntity user = userRepository.findById(id)
+                .orElseThrow(()-> new UsersException("Khong tim thay user"));
 
+        // Kiểm tra mật khẩu hiện tại
+        if (!passwordEncoder.matches(resetPassword.getPassword(), user.getPasswordHash())) {
+            throw new UsersException("Mật khẩu không đúng hãy kiểm tra lại");
+        }
+
+        user.setPasswordHash(passwordEncoder.encode(resetPassword.getNewPassword()));
+        userRepository.save(user);
+    }
 }

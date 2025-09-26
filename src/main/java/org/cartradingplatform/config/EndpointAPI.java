@@ -11,6 +11,7 @@ public class EndpointAPI {
     public  static final String[] PRIVATE_ENDPOINTS = {
             "/api/users/*",
             "/api/account/me/*",
+            "/api/reset/password"
     };
 
     public  static final String[] MANAGEMENT_API_ENDPOINTS  = {

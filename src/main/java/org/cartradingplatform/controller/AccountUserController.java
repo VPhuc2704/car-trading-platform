@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.cartradingplatform.model.dto.PageResponse;
+import org.cartradingplatform.model.dto.requests.ResetPassword;
 import org.cartradingplatform.model.dto.requests.UpdateUserRequestDTO;
 import org.cartradingplatform.model.dto.response.ProfileDTO;
 import org.cartradingplatform.model.dto.response.UserInfoDTO;
@@ -104,6 +105,22 @@ public class AccountUserController {
         return ResponseEntity.ok(
                 new ApiResponse<>("Cập nhật trạng thái user thành công",
                         HttpStatus.OK.value(), updated, request.getRequestURI())
+        );
+    }
+
+    @PatchMapping("reset/password")
+    public ResponseEntity<ApiResponse<String>> getProfileMe( @AuthenticationPrincipal CustomUserDetails currentUser,
+                                                                 @RequestBody ResetPassword resetPassword,
+                                                                 HttpServletRequest request) {
+
+
+
+        Long currentUserId = currentUser.getUser().getId();
+        accountUserService.resetPassword(currentUserId, resetPassword);
+
+        return ResponseEntity.ok(
+                new ApiResponse<>("Thay doi password thanh cong",
+                        HttpStatus.OK.value(), null, request.getRequestURI())
         );
     }
 
