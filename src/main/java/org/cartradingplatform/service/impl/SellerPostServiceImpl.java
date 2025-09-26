@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.cartradingplatform.model.dto.CarDetailDTO;
 import org.cartradingplatform.model.dto.PostDTO;
 import org.cartradingplatform.model.dto.PostPaymentDTO;
+import org.cartradingplatform.model.dto.response.PostWithPaymentResponse;
 import org.cartradingplatform.model.entity.CarDetailEntity;
 import org.cartradingplatform.model.entity.PostPaymentsEntity;
 import org.cartradingplatform.model.entity.PostsEntity;
@@ -18,8 +19,10 @@ import org.cartradingplatform.repository.PostPaymentsRepository;
 import org.cartradingplatform.repository.PostsRepository;
 import org.cartradingplatform.repository.UserRepository;
 import org.cartradingplatform.service.SellerPostService;
+import org.cartradingplatform.service.VNPayService;
 import org.springframework.stereotype.Service;
 
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -33,15 +36,28 @@ public class SellerPostServiceImpl implements SellerPostService {
     private final UserRepository userRepository;
     private final PostsRepository postsRepository;
     private final PostPaymentsRepository paymentsRepository;
+    private final VNPayService vnPayService;
 
     // Tạo bài đăng
     @Override
-    public PostDTO createPost(Long sellerId, PostDTO dto) {
+    public PostWithPaymentResponse createPost(Long sellerId, PostDTO dto) throws UnsupportedEncodingException {
         UsersEntity seller = userRepository.findById(sellerId)
                 .orElseThrow(() -> new RuntimeException("Seller not found"));
 
         PostsEntity post = PostMapper.toEntity(dto, seller);
-        return PostMapper.toDTO(postsRepository.save(post));
+        post = postsRepository.save(post);
+
+        PostPaymentsEntity payment = new PostPaymentsEntity();
+        payment.setPost(post);
+        payment.setSeller(seller);
+        payment.setAmount(BigDecimal.valueOf(50000)); // phí đăng bài
+        payment.setPaymentMethod(PaymentMethod.VNPAY); // chưa chọn
+        payment.setStatus(PaymentStatus.PENDING);
+        payment = paymentsRepository.save(payment);
+
+        String vnpayUrl = vnPayService.createPayment(payment.getAmount().toPlainString(), payment.getPaymentId());
+
+        return new PostWithPaymentResponse(PostMapper.toDTO(post), vnpayUrl);
     }
 
     // Lấy danh sách bài đăng của seller
@@ -55,10 +71,10 @@ public class SellerPostServiceImpl implements SellerPostService {
     @Override
     public PostDTO getPostById(Long sellerId, Long postId) {
         PostsEntity post = postsRepository.findById(postId)
-                .orElseThrow(() -> new RuntimeException("Post not found"));
+                .orElseThrow(() -> new RuntimeException("Bài viết không tìm thấy"));
 
         if (!post.getSeller().getId().equals(sellerId)) {
-            throw new RuntimeException("Unauthorized to view this post");
+            throw new RuntimeException("Không được phép xem bài viết này");
         }
 
         return PostMapper.toDTO(post);
@@ -67,10 +83,10 @@ public class SellerPostServiceImpl implements SellerPostService {
     @Override
     public void deletePost(Long sellerId, Long postId) {
         PostsEntity post = postsRepository.findById(postId)
-                .orElseThrow(() -> new RuntimeException("Post not found"));
+                .orElseThrow(() -> new RuntimeException("Bài viết không tìm thấy"));
 
         if (!post.getSeller().getId().equals(sellerId)) {
-            throw new RuntimeException("Unauthorized to delete this post");
+            throw new RuntimeException("Không được phép xóa bài đăng này");
         }
 
         postsRepository.delete(post);
@@ -80,10 +96,10 @@ public class SellerPostServiceImpl implements SellerPostService {
     @Override
     public PostDTO updatePost(Long sellerId, Long postId, PostDTO dto) {
         PostsEntity post = postsRepository.findById(postId)
-                .orElseThrow(() -> new RuntimeException("Post not found"));
+                .orElseThrow(() -> new RuntimeException("Bài viết không tìm thấy"));
 
         if (!post.getSeller().getId().equals(sellerId)) {
-            throw new RuntimeException("Unauthorized to update this post");
+            throw new RuntimeException("Không được phép cập nhật bài viết này");
         }
 
         if (dto.getTitle() != null) post.setTitle(dto.getTitle());
@@ -109,24 +125,5 @@ public class SellerPostServiceImpl implements SellerPostService {
         }
 
         return PostMapper.toDTO(postsRepository.save(post));
-    }
-
-
-    // Thanh toán phí đăng bài
-    public PostPaymentDTO payForPost(Long postId, UsersEntity seller, PaymentMethod method) {
-        PostsEntity post = postsRepository.findById(postId)
-                .orElseThrow(() -> new RuntimeException("Post not found"));
-
-        if (!post.getSeller().getId().equals(seller.getId())) {
-            throw new RuntimeException("Not your post");
-        }
-
-        PostPaymentsEntity payment = new PostPaymentsEntity();
-        payment.setPost(post);
-        payment.setSeller(seller);
-        payment.setAmount(BigDecimal.valueOf(100000));
-        payment.setPaymentMethod(method);
-        payment.setStatus(PaymentStatus.PAID); // giả định đã trả
-        return PostPaymentMapper.toDTO(paymentsRepository.save(payment));
     }
 }

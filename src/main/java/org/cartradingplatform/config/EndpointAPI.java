@@ -5,6 +5,7 @@ public class EndpointAPI {
             "/api/auth/login",
             "/api/auth/register",
             "/api/auth/logout",
+            "/api/vnpayment/return/**",
     };
 
     public  static final String[] PRIVATE_ENDPOINTS = {

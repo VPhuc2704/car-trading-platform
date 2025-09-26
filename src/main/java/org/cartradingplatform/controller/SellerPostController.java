@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.cartradingplatform.model.dto.PostDTO;
 import org.cartradingplatform.model.dto.PostPaymentDTO;
+import org.cartradingplatform.model.dto.response.PostWithPaymentResponse;
 import org.cartradingplatform.model.entity.UsersEntity;
 import org.cartradingplatform.model.enums.PaymentMethod;
 import org.cartradingplatform.security.CustomUserDetails;
@@ -57,16 +58,13 @@ public class SellerPostController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<PostDTO>> createPost(@RequestPart("postDTO") String postJson,
-                                                           @RequestPart(value = "imageFile", required = true)  List<MultipartFile> imageFiles,
-                                                           HttpServletRequest request) {
+    public ResponseEntity<ApiResponse<PostWithPaymentResponse>> createPost(@RequestPart("postDTO") String postJson,
+                                                                           @RequestPart(value = "imageFile", required = true)  List<MultipartFile> imageFiles,
+                                                                           HttpServletRequest request) {
 
         try {
             PostDTO postDTO = new ObjectMapper().readValue(postJson, PostDTO.class);
-//            String imagePath = savePostImage(imageFiles);
-//            if(postDTO.getImages() == null || postDTO.getImages().isEmpty()){
-//                postDTO.setImages(new ArrayList<>());
-//            }
+
             if (imageFiles != null && !imageFiles.isEmpty()) {
                 for (MultipartFile file : imageFiles) {
                     String imagePath = savePostImage(file);
@@ -76,10 +74,10 @@ public class SellerPostController {
                 }
             }
 
-            PostDTO dto =  sellerPostService.createPost(getCurrentSeller().getId(), postDTO);
+            PostWithPaymentResponse dto =  sellerPostService.createPost(getCurrentSeller().getId(), postDTO);
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(new ApiResponse<>(
-                            "Tạo bai viet thanh cong",
+                            "Tạo bai viet thanh cong,  chuyển tới thanh toán",
                             HttpStatus.CREATED.value(), dto, request.getRequestURI())
 
             );
@@ -187,12 +185,4 @@ public class SellerPostController {
         return ResponseEntity.noContent().build();
     }
 
-    // Thanh toán phí cho post
-    @PostMapping("/{id}/payment")
-    public ResponseEntity<PostPaymentDTO> payForPost(@PathVariable Long id,
-                                                     @RequestParam PaymentMethod method) {
-        return ResponseEntity.ok(
-                sellerPostService.payForPost(id, getCurrentSeller(), method)
-        );
-    }
 }

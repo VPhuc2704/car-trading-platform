@@ -28,7 +28,7 @@ public class PostMapper {
                 .title(dto.getTitle())
                 .description(dto.getDescription())
                 .price(dto.getPrice())
-                .status(PostStatus.PENDING)
+                .status(PostStatus.DRAFT)
                 .location(dto.getLocation())
                 .images(dto.getImages())
                 .seller(seller)
