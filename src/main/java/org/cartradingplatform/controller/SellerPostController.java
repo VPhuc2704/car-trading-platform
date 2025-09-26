@@ -1,0 +1,198 @@
+package org.cartradingplatform.controller;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
+import org.cartradingplatform.model.dto.PostDTO;
+import org.cartradingplatform.model.dto.PostPaymentDTO;
+import org.cartradingplatform.model.entity.UsersEntity;
+import org.cartradingplatform.model.enums.PaymentMethod;
+import org.cartradingplatform.security.CustomUserDetails;
+import org.cartradingplatform.service.SellerPostService;
+import org.cartradingplatform.utils.ApiResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+@RestController
+@RequestMapping("/api/seller/posts")
+@RequiredArgsConstructor
+public class SellerPostController {
+    private final SellerPostService sellerPostService;
+
+    private UsersEntity getCurrentSeller() {
+        return ((CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUser();
+    }
+
+    private String savePostImage(MultipartFile file) throws IOException {
+        if(file == null || file.isEmpty()) return null;
+
+        String uploadPath = System.getProperty("user.dir") + "/uploads/postImg/";
+        File uploadDir = new File(uploadPath);
+        if (!uploadDir.exists()) {
+            uploadDir.mkdirs();
+        }
+
+        String newFileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
+        Path filePath = Paths.get(uploadPath, newFileName);
+
+        try(InputStream inputStream = file.getInputStream()){
+            Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
+        }
+        return "/post/img/" + newFileName;
+    }
+
+    @PostMapping
+    public ResponseEntity<ApiResponse<PostDTO>> createPost(@RequestPart("postDTO") String postJson,
+                                                           @RequestPart(value = "imageFile", required = true)  List<MultipartFile> imageFiles,
+                                                           HttpServletRequest request) {
+
+        try {
+            PostDTO postDTO = new ObjectMapper().readValue(postJson, PostDTO.class);
+//            String imagePath = savePostImage(imageFiles);
+//            if(postDTO.getImages() == null || postDTO.getImages().isEmpty()){
+//                postDTO.setImages(new ArrayList<>());
+//            }
+            if (imageFiles != null && !imageFiles.isEmpty()) {
+                for (MultipartFile file : imageFiles) {
+                    String imagePath = savePostImage(file);
+                    if (imagePath != null) {
+                        postDTO.getImages().add(imagePath);
+                    }
+                }
+            }
+
+            PostDTO dto =  sellerPostService.createPost(getCurrentSeller().getId(), postDTO);
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(new ApiResponse<>(
+                            "Tạo bai viet thanh cong",
+                            HttpStatus.CREATED.value(), dto, request.getRequestURI())
+
+            );
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(
+                            new ApiResponse<>(
+                                    "Error processing image: " + e.getMessage(),
+                                    HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                                    null,
+                                    request.getRequestURI()
+                            )
+                    );
+
+        }
+
+    }
+
+    // Lấy danh sách bài đăng của seller hiện tại
+    @GetMapping
+    public ResponseEntity<ApiResponse<List<PostDTO>>> getMyPosts(HttpServletRequest request) {
+
+        List<PostDTO> postDTOList = sellerPostService.getMyPosts(getCurrentSeller().getId());
+
+        return ResponseEntity.ok( new ApiResponse<>(
+                "Lấy thành công tất cả bài đăng",
+                HttpStatus.OK.value(),
+                postDTOList,
+                request.getRequestURI()
+                )
+        );
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<PostDTO>> getPostById(@PathVariable Long id, HttpServletRequest request) {
+
+        PostDTO postDTO = sellerPostService.getPostById(getCurrentSeller().getId(), id);
+        return ResponseEntity.ok(new ApiResponse<>(
+                "Lấy thành công bài đăng" + id,
+                HttpStatus.OK.value(),
+                postDTO,
+                request.getRequestURI())
+        );
+    }
+
+    // Cập nhật post
+    @PutMapping("/{id}")
+    public ResponseEntity<ApiResponse<PostDTO>> updatePost(@PathVariable Long id,
+                                                           @RequestPart("postDTO") String postJson,
+                                                           @RequestPart(value = "imageFile", required =  false) List<MultipartFile>  imageFiles,
+                                                           HttpServletRequest request) {
+
+        try {
+            PostDTO postDTO = null;
+            if(postJson != null) {
+                postDTO = new ObjectMapper().readValue(postJson, PostDTO.class);
+            }
+
+            if (postDTO == null) {
+                postDTO = new PostDTO();
+            }
+
+            // Nếu có upload ảnh mới => replace ảnh cũ
+            if (imageFiles != null && !imageFiles.isEmpty()) {
+                List<String> newImages = new ArrayList<>();
+                for (MultipartFile file : imageFiles) {
+                    String imagePath = savePostImage(file);
+                    if (imagePath != null) {
+                        newImages.add(imagePath);
+                    }
+                }
+                postDTO.setImages(newImages);
+            } else {
+                // Không upload ảnh mới => giữ nguyên ảnh cũ
+                PostDTO oldPost = sellerPostService.getPostById(getCurrentSeller().getId(), id);
+                postDTO.setImages(oldPost != null && oldPost.getImages() != null
+                        ? new ArrayList<>(oldPost.getImages())
+                        : new ArrayList<>());
+            }
+
+            PostDTO updatePost = sellerPostService.updatePost(getCurrentSeller().getId(), id, postDTO);
+            return ResponseEntity.ok(new ApiResponse<>(
+                    "Cập nhật thành công bài đăng",
+                    HttpStatus.OK.value(),
+                    updatePost,
+                    request.getRequestURI())
+            );
+
+        }catch (IOException e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ApiResponse<>(
+                                    "Error processing image: " + e.getMessage(),
+                                    HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                                    null,
+                                    request.getRequestURI()
+                            )
+                    );
+        }
+    }
+
+    // Xóa post
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletePost(@PathVariable Long id) {
+        sellerPostService.deletePost(getCurrentSeller().getId(), id);
+        return ResponseEntity.noContent().build();
+    }
+
+    // Thanh toán phí cho post
+    @PostMapping("/{id}/payment")
+    public ResponseEntity<PostPaymentDTO> payForPost(@PathVariable Long id,
+                                                     @RequestParam PaymentMethod method) {
+        return ResponseEntity.ok(
+                sellerPostService.payForPost(id, getCurrentSeller(), method)
+        );
+    }
+}

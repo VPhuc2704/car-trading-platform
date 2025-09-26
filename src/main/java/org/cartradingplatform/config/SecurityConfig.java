@@ -53,6 +53,7 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests((authorize) -> {
                     authorize.requestMatchers(EndpointAPI.MANAGEMENT_API_ENDPOINTS).hasRole("ADMIN");
+                    authorize.requestMatchers(EndpointAPI.SELLER_API_ENDPOINTS).hasRole("SELLER");
                     authorize.requestMatchers(EndpointAPI.PUBLIC_API_ENDPOINTS).permitAll();
                     authorize.requestMatchers(EndpointAPI.PRIVATE_ENDPOINTS).authenticated();
                     authorize.anyRequest().authenticated();

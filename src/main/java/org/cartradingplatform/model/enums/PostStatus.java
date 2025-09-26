@@ -1,7 +1,17 @@
 package org.cartradingplatform.model.enums;
 
+import lombok.Getter;
+
+@Getter
 public enum PostStatus {
-    AVAILABLE,
-    SOLD,
-    BLOCK
+    PENDING("PENDING"),
+    APPROVED("APPROVED"),
+    REJECTED("REJECTED"),
+    BLOCKED("BLOCKED");
+
+    private final String status;
+
+    PostStatus(String status) {
+        this.status = status;
+    }
 }

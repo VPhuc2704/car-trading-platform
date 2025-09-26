@@ -16,4 +16,8 @@ public class EndpointAPI {
             "/api/admin/users/**",
     };
 
+    public static final String[] SELLER_API_ENDPOINTS = {
+            "/api/seller/posts/*",
+    };
+
 }
