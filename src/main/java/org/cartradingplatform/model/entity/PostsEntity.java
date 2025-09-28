@@ -51,4 +51,7 @@ public class PostsEntity extends  BaseEntity{
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "car_detail_id", nullable = false)
     private CarDetailEntity carDetail;
+
+    @Column(name = "is_deleted", nullable = false)
+    private Boolean isDeleted = false;
 }

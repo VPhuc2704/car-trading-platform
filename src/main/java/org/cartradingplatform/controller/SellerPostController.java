@@ -4,16 +4,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.cartradingplatform.model.dto.PostDTO;
-import org.cartradingplatform.model.dto.PostPaymentDTO;
 import org.cartradingplatform.model.dto.response.PostWithPaymentResponse;
 import org.cartradingplatform.model.entity.UsersEntity;
 import org.cartradingplatform.model.enums.PaymentMethod;
+import org.cartradingplatform.model.enums.PostStatus;
 import org.cartradingplatform.security.CustomUserDetails;
-import org.cartradingplatform.service.SellerPostService;
+import org.cartradingplatform.service.PostService;
 import org.cartradingplatform.utils.ApiResponse;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -33,7 +34,7 @@ import java.util.UUID;
 @RequestMapping("/api/seller/posts")
 @RequiredArgsConstructor
 public class SellerPostController {
-    private final SellerPostService sellerPostService;
+    private final PostService postService;
 
     private UsersEntity getCurrentSeller() {
         return ((CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUser();
@@ -74,7 +75,7 @@ public class SellerPostController {
                 }
             }
 
-            PostWithPaymentResponse dto =  sellerPostService.createPost(getCurrentSeller().getId(), postDTO);
+            PostWithPaymentResponse dto =  postService.createPost(getCurrentSeller().getId(), postDTO);
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(new ApiResponse<>(
                             "Tạo bai viet thanh cong,  chuyển tới thanh toán",
@@ -100,7 +101,7 @@ public class SellerPostController {
     @GetMapping
     public ResponseEntity<ApiResponse<List<PostDTO>>> getMyPosts(HttpServletRequest request) {
 
-        List<PostDTO> postDTOList = sellerPostService.getMyPosts(getCurrentSeller().getId());
+        List<PostDTO> postDTOList = postService.getMyPosts(getCurrentSeller().getId());
 
         return ResponseEntity.ok( new ApiResponse<>(
                 "Lấy thành công tất cả bài đăng",
@@ -112,9 +113,10 @@ public class SellerPostController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<PostDTO>> getPostById(@PathVariable Long id, HttpServletRequest request) {
+    public ResponseEntity<ApiResponse<PostDTO>> getPostById(@PathVariable Long id,
+                                                            HttpServletRequest request) {
 
-        PostDTO postDTO = sellerPostService.getPostById(getCurrentSeller().getId(), id);
+        PostDTO postDTO = postService.getPostById(getCurrentSeller().getId(), id);
         return ResponseEntity.ok(new ApiResponse<>(
                 "Lấy thành công bài đăng" + id,
                 HttpStatus.OK.value(),
@@ -129,7 +131,6 @@ public class SellerPostController {
                                                            @RequestPart("postDTO") String postJson,
                                                            @RequestPart(value = "imageFile", required =  false) List<MultipartFile>  imageFiles,
                                                            HttpServletRequest request) {
-
         try {
             PostDTO postDTO = null;
             if(postJson != null) {
@@ -152,13 +153,13 @@ public class SellerPostController {
                 postDTO.setImages(newImages);
             } else {
                 // Không upload ảnh mới => giữ nguyên ảnh cũ
-                PostDTO oldPost = sellerPostService.getPostById(getCurrentSeller().getId(), id);
+                PostDTO oldPost = postService.getPostById(getCurrentSeller().getId(), id);
                 postDTO.setImages(oldPost != null && oldPost.getImages() != null
                         ? new ArrayList<>(oldPost.getImages())
                         : new ArrayList<>());
             }
 
-            PostDTO updatePost = sellerPostService.updatePost(getCurrentSeller().getId(), id, postDTO);
+            PostDTO updatePost = postService.updatePost(getCurrentSeller().getId(), id, postDTO);
             return ResponseEntity.ok(new ApiResponse<>(
                     "Cập nhật thành công bài đăng",
                     HttpStatus.OK.value(),
@@ -180,9 +181,38 @@ public class SellerPostController {
 
     // Xóa post
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletePost(@PathVariable Long id) {
-        sellerPostService.deletePost(getCurrentSeller().getId(), id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<ApiResponse<String>> deletePost(@PathVariable Long id,
+                                                          HttpServletRequest request) {
+        postService.deletePost(getCurrentSeller().getId(), id);
+        return ResponseEntity.ok(new ApiResponse<>(
+                "Xóa bài đăng thành công",
+                HttpStatus.NO_CONTENT.value(),
+                null,
+                request.getRequestURI())
+        );
+    }
+
+
+    @PostMapping("/{postId}/retry-payment")
+    public ResponseEntity<PostWithPaymentResponse> retryPayment(@AuthenticationPrincipal CustomUserDetails currentUser,
+                                                                @PathVariable Long postId) throws UnsupportedEncodingException {
+        PostWithPaymentResponse response = postService.retryPayment(currentUser.getUser().getId(), postId, PaymentMethod.VNPAY);
+        return ResponseEntity.ok(response);
+    }
+
+
+    @PatchMapping("/{postId}/status")
+    public ResponseEntity<ApiResponse<PostDTO>> updatePostStatus(@AuthenticationPrincipal CustomUserDetails currentUser,
+                                                                 @PathVariable Long postId,
+                                                                 @RequestParam PostStatus newStatus,
+                                                                 HttpServletRequest request) {
+        PostDTO updatedPost = postService.updatePostStatus(postId, newStatus, currentUser);
+        return ResponseEntity.ok(new ApiResponse<>(
+                "Cập nhật trạng thái thành công",
+                HttpStatus.OK.value(),
+                updatedPost,
+                request.getRequestURI()
+        ));
     }
 
 }

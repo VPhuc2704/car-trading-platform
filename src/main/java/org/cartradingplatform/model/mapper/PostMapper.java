@@ -33,6 +33,7 @@ public class PostMapper {
                 .images(dto.getImages())
                 .seller(seller)
                 .carDetail(CarDetailMapper.toEntity(dto.getCarDetailDTO()))
+                .isDeleted(false)
                 .build();
     }
 }

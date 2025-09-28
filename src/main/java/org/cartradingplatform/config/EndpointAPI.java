@@ -6,6 +6,7 @@ public class EndpointAPI {
             "/api/auth/register",
             "/api/auth/logout",
             "/api/vnpayment/return/**",
+            "/api/public/posts"
     };
 
     public  static final String[] PRIVATE_ENDPOINTS = {
@@ -16,10 +17,11 @@ public class EndpointAPI {
 
     public  static final String[] MANAGEMENT_API_ENDPOINTS  = {
             "/api/admin/users/**",
+            "/api/admin/posts/**",
     };
 
     public static final String[] SELLER_API_ENDPOINTS = {
-            "/api/seller/posts/*",
+            "/api/seller/posts/**",
     };
 
 }

@@ -10,4 +10,9 @@ import java.util.Optional;
 @Repository
 public interface PostPaymentsRepository extends JpaRepository<PostPaymentsEntity, Long> {
     Optional<PostPaymentsEntity> findByPostPostId(Long postId);
+
+    // Lấy bản ghi payment mới nhất theo id giảm dần
+    Optional<PostPaymentsEntity> findTopByPostOrderByPaymentIdDesc(PostsEntity post);
+    // Xóa tất cả payments của một post
+    void deleteByPost(PostsEntity post);
 }
