@@ -17,8 +17,6 @@ public class UserMapper {
         profileDTO.setEmail(users.getEmail());
         profileDTO.setFullName(users.getFullName());
         profileDTO.setNumberPhone(users.getNumberPhone());
-        profileDTO.setDateOfBirth(users.getDateOfBirth());
-        profileDTO.setGender(users.getGender());
         profileDTO.setRole(users.getRoleName());
         profileDTO.setIsActive(users.isActive());
         return profileDTO;
@@ -30,8 +28,6 @@ public class UserMapper {
         users.setEmail(profileDTO.getEmail());
         users.setFullName(profileDTO.getFullName());
         users.setNumberPhone(profileDTO.getNumberPhone());
-        users.setDateOfBirth(profileDTO.getDateOfBirth());
-        users.setGender(profileDTO.getGender());
         users.setRoleName(profileDTO.getRole());
         users.setActive(profileDTO.getIsActive() != null ? profileDTO.getIsActive() : true);
         return users;

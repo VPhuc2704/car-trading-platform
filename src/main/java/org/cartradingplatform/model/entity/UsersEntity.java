@@ -3,10 +3,8 @@ package org.cartradingplatform.model.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.cartradingplatform.model.enums.Gender;
 import org.cartradingplatform.model.enums.RoleName;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -36,12 +34,6 @@ public class UsersEntity extends BaseEntity{
 
     @Column(name = "is_active")
     private boolean isActive;
-
-    @Column(name = "date_of_birth")
-    private LocalDate dateOfBirth;
-
-    @Enumerated(EnumType.STRING)
-    private Gender gender;
 
     @Column(name = "last_login")
     private LocalDateTime lastLogin;

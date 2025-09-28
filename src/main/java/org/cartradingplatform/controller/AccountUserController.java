@@ -7,7 +7,6 @@ import org.cartradingplatform.model.dto.PageResponse;
 import org.cartradingplatform.model.dto.requests.ResetPassword;
 import org.cartradingplatform.model.dto.requests.UpdateUserRequestDTO;
 import org.cartradingplatform.model.dto.response.ProfileDTO;
-import org.cartradingplatform.model.dto.response.UserInfoDTO;
 import org.cartradingplatform.security.CustomUserDetails;
 import org.cartradingplatform.service.AccountUserService;
 import org.cartradingplatform.utils.ApiResponse;

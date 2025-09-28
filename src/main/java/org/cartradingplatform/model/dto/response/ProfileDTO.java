@@ -1,8 +1,6 @@
 package org.cartradingplatform.model.dto.response;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
-import org.cartradingplatform.model.enums.Gender;
 import org.cartradingplatform.model.enums.RoleName;
 
 import java.time.LocalDate;
@@ -13,8 +11,6 @@ public class ProfileDTO {
     private String email;
     private String fullName;
     private String numberPhone;
-    private LocalDate dateOfBirth;
-    private Gender gender;
     private RoleName role;
     private Boolean isActive;
 }

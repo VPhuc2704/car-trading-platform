@@ -47,8 +47,6 @@ public class AccountUserServiceImpl implements AccountUserService {
             if (dto.getEmail() != null) user.setEmail(dto.getEmail());
             if (dto.getFullName() != null) user.setFullName(dto.getFullName());
             if (dto.getNumberPhone() != null) user.setNumberPhone(dto.getNumberPhone());
-            if (dto.getDateOfBirth() != null) user.setDateOfBirth(dto.getDateOfBirth());
-            if (dto.getGender() != null) user.setGender(dto.getGender());
             if (dto.getRoleName() != null) user.setRoleName(dto.getRoleName());
             if (dto.getIsActive() != null) user.setActive(dto.getIsActive());
         }
@@ -56,8 +54,6 @@ public class AccountUserServiceImpl implements AccountUserService {
         else if (currentUser.getUser().getId().equals(id)) {
             if (dto.getFullName() != null) user.setFullName(dto.getFullName());
             if (dto.getNumberPhone() != null) user.setNumberPhone(dto.getNumberPhone());
-            if (dto.getDateOfBirth() != null) user.setDateOfBirth(dto.getDateOfBirth());
-            if (dto.getGender() != null) user.setGender(dto.getGender());
         } else {
             throw new UsersException("Bạn không có quyền cập nhật user khác");
         }
