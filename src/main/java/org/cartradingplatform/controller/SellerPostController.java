@@ -194,10 +194,17 @@ public class SellerPostController {
 
 
     @PostMapping("/{postId}/retry-payment")
-    public ResponseEntity<PostWithPaymentResponse> retryPayment(@AuthenticationPrincipal CustomUserDetails currentUser,
-                                                                @PathVariable Long postId) throws UnsupportedEncodingException {
-        PostWithPaymentResponse response = postService.retryPayment(currentUser.getUser().getId(), postId, PaymentMethod.VNPAY);
-        return ResponseEntity.ok(response);
+    public ResponseEntity<ApiResponse<String>> retryPayment(@AuthenticationPrincipal CustomUserDetails currentUser,
+                                                                @PathVariable Long postId,HttpServletRequest request) throws UnsupportedEncodingException {
+        String paymentUrl = postService.retryPayment(currentUser.getUser().getId(), postId, PaymentMethod.VNPAY);
+        return ResponseEntity.ok(
+                new ApiResponse<>(
+                    "Link Thanh Toan",
+                    HttpStatus.CREATED.value(),
+                    paymentUrl,
+                    request.getRequestURI()
+                )
+        );
     }
 
 

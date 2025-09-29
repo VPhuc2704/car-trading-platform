@@ -35,12 +35,25 @@ public class AccountUserController {
         );
     }
 
-    @PutMapping("/account/{id}")
-    public ResponseEntity<ApiResponse<ProfileDTO>> updateUserProfile(
-            @PathVariable Long id,
-            @RequestBody UpdateUserRequestDTO dto,
-            @AuthenticationPrincipal CustomUserDetails currentUser,
-            HttpServletRequest request) {
+    @PutMapping("/account/me")
+    public ResponseEntity<ApiResponse<ProfileDTO>> updateOwnProfile(@RequestBody UpdateUserRequestDTO dto,
+                                                                    @AuthenticationPrincipal CustomUserDetails currentUser,
+                                                                    HttpServletRequest request) {
+
+        ProfileDTO updated = accountUserService.updateUserProfile(currentUser.getUser().getId(), dto, currentUser);
+
+        return ResponseEntity.ok(
+                new ApiResponse<>("Cập nhật thành công",
+                        HttpStatus.OK.value(), updated, request.getRequestURI())
+        );
+    }
+
+
+    @PutMapping("/admin/account/{id}")
+    public ResponseEntity<ApiResponse<ProfileDTO>> updateUserProfile(@PathVariable Long id,
+                                                                     @RequestBody UpdateUserRequestDTO dto,
+                                                                     @AuthenticationPrincipal CustomUserDetails currentUser,
+                                                                     HttpServletRequest request) {
 
         ProfileDTO updated = accountUserService.updateUserProfile(id, dto, currentUser);
 
@@ -52,12 +65,10 @@ public class AccountUserController {
 
 
     @GetMapping("admin/users")
-    public ResponseEntity<ApiResponse<PageResponse<ProfileDTO>>> getAllUsers(
-            @RequestParam(required = false) String email,
-            @RequestParam(required = false) String roleName,
-            @RequestParam(required = false) Boolean isActive,
-            Pageable pageable,
-            HttpServletRequest request) {
+    public ResponseEntity<ApiResponse<PageResponse<ProfileDTO>>> getAllUsers(@RequestParam(required = false) String email,
+                                                                             @RequestParam(required = false) String roleName,
+                                                                             @RequestParam(required = false) Boolean isActive,
+                                                                             Pageable pageable, HttpServletRequest request) {
 
         PageResponse<ProfileDTO> result = accountUserService.getAllUsers(email, roleName, isActive, pageable);
 
@@ -68,9 +79,7 @@ public class AccountUserController {
     }
 
     @GetMapping("/admin/users/{id}")
-    public ResponseEntity<ApiResponse<ProfileDTO>> getUserById(
-            @PathVariable Long id,
-            HttpServletRequest request) {
+    public ResponseEntity<ApiResponse<ProfileDTO>> getUserById(@PathVariable Long id, HttpServletRequest request) {
 
         ProfileDTO user = accountUserService.getUserProfile(id);
 
@@ -81,8 +90,7 @@ public class AccountUserController {
     }
 
     @PostMapping("/admin/users")
-    public ResponseEntity<ApiResponse<ProfileDTO>> createUser(@Valid @RequestBody ProfileDTO dto,
-                                                              HttpServletRequest request) {
+    public ResponseEntity<ApiResponse<ProfileDTO>> createUser(@Valid @RequestBody ProfileDTO dto, HttpServletRequest request) {
 
         ProfileDTO created = accountUserService.createUser(dto);
 

@@ -20,7 +20,7 @@ public interface PostService {
     void deletePost(Long sellerId, Long postId);
     List<PostDTO> getMyPosts(Long sellerId);
     PostDTO getPostById(Long sellerId, Long postId);
-    PostWithPaymentResponse retryPayment(Long sellerId, Long postId, PaymentMethod method) throws UnsupportedEncodingException;
+    String retryPayment(Long sellerId, Long postId, PaymentMethod method) throws UnsupportedEncodingException;
 
     //ADMIN
     PageResponse<PostDTO> getAllPosts(PostStatus status, Pageable pageable);

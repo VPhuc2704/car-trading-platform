@@ -66,7 +66,7 @@ public class AdminPostController {
         postService.deletePost(id);
         return ResponseEntity.ok(new ApiResponse<>(
                 "Xóa bài đăng thành công",
-                HttpStatus.OK.value(),
+                HttpStatus.NO_CONTENT.value(),
                 null,
                 request.getRequestURI()
         ));

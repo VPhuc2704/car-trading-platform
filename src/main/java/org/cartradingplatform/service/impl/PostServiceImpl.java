@@ -172,7 +172,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional
-    public PostWithPaymentResponse retryPayment(Long sellerId, Long postId, PaymentMethod method) throws UnsupportedEncodingException {
+    public String retryPayment(Long sellerId, Long postId, PaymentMethod method) throws UnsupportedEncodingException {
         PostsEntity post = postsRepository.findById(postId)
                 .orElseThrow(() -> new PostException("Bài viết không tìm thấy"));
 
@@ -194,12 +194,10 @@ public class PostServiceImpl implements PostService {
         newPayment = paymentsRepository.save(newPayment);
 
         // Tạo link thanh toán mới
-        String paymentUrl = vnPayService.createPayment(
+        return vnPayService.createPayment(
                 newPayment.getAmount().toPlainString(),
                 newPayment.getPaymentId()
         );
-
-        return new PostWithPaymentResponse(PostMapper.toDTO(post), paymentUrl);
     }
 
 //    ==================================================================================================================
