@@ -6,13 +6,15 @@ public class EndpointAPI {
             "/api/auth/register",
             "/api/auth/logout",
             "/api/vnpayment/return/**",
-            "/api/public/posts"
+            "/api/public/posts",
+            "/api/reviews/seller/{sellerId}",
     };
 
     public  static final String[] PRIVATE_ENDPOINTS = {
             "/api/users/*",
             "/api/account/me/*",
-            "/api/reset/password"
+            "/api/reset/password",
+            "/api/reviews/*"
     };
 
     public  static final String[] MANAGEMENT_API_ENDPOINTS  = {
