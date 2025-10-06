@@ -16,6 +16,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/public/posts")
 @RequiredArgsConstructor
@@ -35,5 +38,10 @@ public class PublicPostController {
                         request.getRequestURI()
                 )
         );
+    }
+
+    @GetMapping("/search")
+    public ApiResponse<List<PostDTO>> searchCars(@RequestParam Map<String, String> params) {
+        return postService.searchCars(params);
     }
 }

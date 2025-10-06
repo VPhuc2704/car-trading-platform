@@ -6,10 +6,12 @@ import org.cartradingplatform.model.dto.response.PostWithPaymentResponse;
 import org.cartradingplatform.model.enums.PaymentMethod;
 import org.cartradingplatform.model.enums.PostStatus;
 import org.cartradingplatform.security.CustomUserDetails;
+import org.cartradingplatform.utils.ApiResponse;
 import org.springframework.data.domain.Pageable;
 
 import java.io.UnsupportedEncodingException;
 import java.util.List;
+import java.util.Map;
 
 public interface PostService {
     PageResponse<PostDTO> getPublicPosts(Pageable pageable);
@@ -29,5 +31,7 @@ public interface PostService {
 
     // Cả hai
     PostDTO updatePostStatus(Long postId, PostStatus newStatus, CustomUserDetails currentUser);
+
+    ApiResponse<List<PostDTO>> searchCars(Map<String, String> params);
 
 }

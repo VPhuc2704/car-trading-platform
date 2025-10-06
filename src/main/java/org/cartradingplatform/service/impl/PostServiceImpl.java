@@ -1,5 +1,7 @@
 package org.cartradingplatform.service.impl;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.cartradingplatform.exceptions.PostException;
@@ -22,6 +24,7 @@ import org.cartradingplatform.repository.UserRepository;
 import org.cartradingplatform.security.CustomUserDetails;
 import org.cartradingplatform.service.PostService;
 import org.cartradingplatform.service.VNPayService;
+import org.cartradingplatform.utils.ApiResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -32,6 +35,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -285,6 +289,46 @@ public class PostServiceImpl implements PostService {
 
         post.setStatus(newStatus);
         return  PostMapper.toDTO(postsRepository.save(post));
+    }
+
+
+    private final EntityManager entityManager;
+
+    @Override
+    public ApiResponse<List<PostDTO>> searchCars(Map<String, String> params) {
+        StringBuilder jpql = new StringBuilder("SELECT p FROM PostsEntity p WHERE p.isDeleted = false AND p.status = :status");
+
+        List<String> conditions = new ArrayList<>();
+
+        if (params.containsKey("make")) conditions.add("p.carDetail.make = :make");
+        if (params.containsKey("model")) conditions.add("p.carDetail.model = :model");
+        if (params.containsKey("year")) conditions.add("p.carDetail.year = :year");
+        if (params.containsKey("color")) conditions.add("p.carDetail.color = :color");
+        if (params.containsKey("condition")) conditions.add("p.carDetail.condition = :condition");
+        if (params.containsKey("minPrice")) conditions.add("p.price >= :minPrice");
+        if (params.containsKey("maxPrice")) conditions.add("p.price <= :maxPrice");
+
+        if (!conditions.isEmpty()) {
+            jpql.append(" AND ").append(String.join(" AND ", conditions));
+        }
+
+        TypedQuery<PostsEntity> query = entityManager.createQuery(jpql.toString(), PostsEntity.class);
+        query.setParameter("status", PostStatus.APPROVED);
+
+        // set params
+        params.forEach((k, v) -> {
+            switch (k) {
+                case "make", "model", "color", "condition" -> query.setParameter(k, v);
+                case "year" -> query.setParameter(k, Integer.valueOf(v));
+                case "minPrice", "maxPrice" -> query.setParameter(k, new BigDecimal(v));
+            }
+        });
+
+        List<PostDTO> results = query.getResultList().stream()
+                .map(PostMapper::toDTO)
+                .toList();
+
+        return new ApiResponse<>("Search results", 200, results, "/api/posts/search");
     }
 
 }

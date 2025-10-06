@@ -6,7 +6,7 @@ public class EndpointAPI {
             "/api/auth/register",
             "/api/auth/logout",
             "/api/vnpayment/return/**",
-            "/api/public/posts",
+            "/api/public/posts/**",
             "/api/reviews/seller/{sellerId}",
     };
 
