@@ -31,6 +31,8 @@ public class GlobalExceptionHandler  {
     @ExceptionHandler({
             UsersException.class,
             PostException.class,
+            ReportException.class,
+            ReviewException.class,
     })
     public ResponseEntity<Map<String,Object>> handleVerificationTokenException(RuntimeException ex, HttpServletRequest request){
         Map<String,Object> body = new HashMap<>();

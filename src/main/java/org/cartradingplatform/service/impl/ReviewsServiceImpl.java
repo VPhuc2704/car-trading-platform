@@ -1,6 +1,8 @@
 package org.cartradingplatform.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.cartradingplatform.exceptions.ReviewException;
+import org.cartradingplatform.exceptions.UsersException;
 import org.cartradingplatform.model.dto.PageResponse;
 import org.cartradingplatform.model.dto.requests.ReviewsRequestDTO;
 import org.cartradingplatform.model.dto.response.ReviewResponseDTO;
@@ -27,9 +29,9 @@ public class ReviewsServiceImpl implements ReviewsService {
     @Override
     public ReviewResponseDTO createReview(Long reviewerId, ReviewsRequestDTO dto) {
         UsersEntity reviewer = userRepository.findById(reviewerId)
-                .orElseThrow(() -> new RuntimeException("Reviewer not found"));
+                .orElseThrow(() -> new UsersException("Reviewer not found"));
         UsersEntity reviewed = userRepository.findById(dto.getReviewedId())
-                .orElseThrow(() -> new RuntimeException("Reviewed user not found"));
+                .orElseThrow(() -> new UsersException("Reviewed user not found"));
 
         ReviewsEntity review = ReviewsEntity.builder()
                 .rating(dto.getRating())
@@ -69,7 +71,7 @@ public class ReviewsServiceImpl implements ReviewsService {
     public ReviewResponseDTO updateReview(Long reviewId, Long reviewerId, ReviewsRequestDTO dto) {
 
         ReviewsEntity review = reviewsRepository.findByIdAndReviewer_Id(reviewId, reviewerId)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy đánh giá hoặc bạn không có quyền sửa"));
+                .orElseThrow(() -> new ReviewException("Không tìm thấy đánh giá hoặc bạn không có quyền sửa"));
 
         review.setRating(dto.getRating());
         review.setComment(dto.getComment());
@@ -83,7 +85,7 @@ public class ReviewsServiceImpl implements ReviewsService {
     @Transactional
     public void deleteReview(Long reviewId, Long reviewerId) {
         ReviewsEntity review = reviewsRepository.findByIdAndReviewer_Id(reviewId, reviewerId)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy đánh giá hoặc bạn không có quyền xóa"));
+                .orElseThrow(() -> new ReviewException("Không tìm thấy đánh giá hoặc bạn không có quyền xóa"));
 
         reviewsRepository.delete(review);
     }

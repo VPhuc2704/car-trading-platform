@@ -23,7 +23,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         UsersEntity user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
+                .orElseThrow(() -> new UsersException("User not found with email: " + email));
 
         if (!user.isActive()) {
             throw new UsersException("Tài khoản của bạn đã bị khóa vĩnh viễn.");

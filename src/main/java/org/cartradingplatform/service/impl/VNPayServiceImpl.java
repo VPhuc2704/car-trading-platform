@@ -3,6 +3,8 @@ package org.cartradingplatform.service.impl;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.cartradingplatform.config.VNPayConfig;
+import org.cartradingplatform.exceptions.ReportException;
+import org.cartradingplatform.exceptions.UsersException;
 import org.cartradingplatform.model.entity.PostPaymentsEntity;
 import org.cartradingplatform.model.entity.PostsEntity;
 import org.cartradingplatform.model.enums.PaymentStatus;
@@ -30,7 +32,7 @@ public class VNPayServiceImpl implements VNPayService {
     public String createPayment(String totalAmount, Long paymentId) throws UnsupportedEncodingException {
 
         PostPaymentsEntity payment = postPaymentsRepository.findById(paymentId)
-                .orElseThrow(() -> new RuntimeException("Payment not found"));
+                .orElseThrow(() -> new UsersException("Payment not found"));
 
         String vnp_Version = "2.1.0";
         String vnp_Command = "pay";
@@ -116,7 +118,7 @@ public class VNPayServiceImpl implements VNPayService {
         }
 
         PostPaymentsEntity payment = postPaymentsRepository.findById(paymentId)
-                .orElseThrow(() -> new RuntimeException("Payment not found"));
+                .orElseThrow(() -> new ReportException("Payment not found"));
 
         PostsEntity post = payment.getPost();
 

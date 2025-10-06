@@ -1,6 +1,8 @@
 package org.cartradingplatform.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.cartradingplatform.exceptions.ReportException;
+import org.cartradingplatform.exceptions.UsersException;
 import org.cartradingplatform.model.dto.requests.ReportRequestDTO;
 import org.cartradingplatform.model.dto.response.ReportResponseDTO;
 import org.cartradingplatform.model.entity.ReportEntity;
@@ -28,11 +30,11 @@ public class ReportServiceImpl implements ReportService {
 
         // Lấy người báo cáo từ token (đã truyền từ controller)
         UsersEntity reporter = userRepository.findById(reporterId)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy người báo cáo"));
+                .orElseThrow(() -> new ReportException("Không tìm thấy người báo cáo"));
 
         // Người bị báo cáo lấy từ DTO
         UsersEntity reportedUser = userRepository.findById(dto.getReportedUserId())
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy người bị báo cáo"));
+                .orElseThrow(() -> new ReportException("Không tìm thấy người bị báo cáo"));
 
         ReportEntity report = ReportEntity.builder()
                 .reporter(reporter)
@@ -79,15 +81,15 @@ public class ReportServiceImpl implements ReportService {
     @Transactional
     public ReportResponseDTO  handleReport(Long reportId, Long adminId, ReportStatus status) {
         ReportEntity report = reportRepository.findById(reportId)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy báo cáo"));
+                .orElseThrow(() -> new ReportException("Không tìm thấy báo cáo"));
 
         UsersEntity admin = userRepository.findById(adminId)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy admin"));
+                .orElseThrow(() -> new UsersException("Không tìm thấy admin"));
 
         UsersEntity reportedUser = report.getReportedUser();
 
         if (report.getStatus() != ReportStatus.PENDING) {
-            throw new RuntimeException("Báo cáo này đã được xử lý trước đó!");
+            throw new ReportException("Báo cáo này đã được xử lý trước đó!");
         }
 
 
