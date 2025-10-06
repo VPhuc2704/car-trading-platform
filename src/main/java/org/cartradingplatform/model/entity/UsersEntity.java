@@ -35,6 +35,9 @@ public class UsersEntity extends BaseEntity{
     @Column(name = "is_active")
     private boolean isActive;
 
-    @Column(name = "last_login")
-    private LocalDateTime lastLogin;
+    @Column(name = "is_suspended")
+    private boolean suspended = false;
+
+    @Column(name = "suspension_end")
+    private LocalDateTime suspensionEnd;
 }

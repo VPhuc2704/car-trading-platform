@@ -14,17 +14,20 @@ public class EndpointAPI {
             "/api/users/*",
             "/api/account/me/*",
             "/api/reset/password",
-            "/api/reviews/*"
+            "/api/reviews/*",
+            "/api/reports/**",
     };
 
     public  static final String[] MANAGEMENT_API_ENDPOINTS  = {
             "/api/admin/users/**",
             "/api/admin/posts/**",
             "/api/admin/account/**",
+            "/api/admin/reports/**"
     };
 
     public static final String[] SELLER_API_ENDPOINTS = {
             "/api/seller/posts/**",
+            "/api/reports/about-me"
     };
 
 }
