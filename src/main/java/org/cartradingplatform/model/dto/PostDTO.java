@@ -27,5 +27,4 @@ public class PostDTO {
     private CarDetailDTO carDetailDTO;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-
 }

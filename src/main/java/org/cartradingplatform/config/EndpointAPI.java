@@ -16,6 +16,7 @@ public class EndpointAPI {
             "/api/reset/password",
             "/api/reviews/*",
             "/api/reports/**",
+            "/api/favorites/**"
     };
 
     public  static final String[] MANAGEMENT_API_ENDPOINTS  = {
