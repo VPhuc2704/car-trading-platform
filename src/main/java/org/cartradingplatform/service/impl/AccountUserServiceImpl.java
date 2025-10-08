@@ -1,5 +1,6 @@
 package org.cartradingplatform.service.impl;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.cartradingplatform.exceptions.UsersException;
 import org.cartradingplatform.model.dto.PageResponse;
@@ -99,14 +100,11 @@ public class AccountUserServiceImpl implements AccountUserService {
     }
 
     @Override
-    public ProfileDTO updateUserStatus(Long id, boolean active) {
+    @Transactional
+    public void deleteUser(Long id) {
         UsersEntity user = userRepository.findById(id)
                 .orElseThrow(() -> new UsersException("Không tìm thấy user"));
-
-        user.setActive(active);
-        UsersEntity saved = userRepository.save(user);
-
-        return userMapper.toDTO(saved);
+        userRepository.delete(user);
     }
 
     @Override

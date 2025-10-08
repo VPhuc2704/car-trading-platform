@@ -18,7 +18,6 @@ public class CarDetailDTO {
     private Integer mileage;       // Số km đã đi
     private String fuelType;       // Nhiên liệu
     private String transmission;   // Hộp số
-    private BigDecimal engineCapacity; // Dung tích động cơ
     private String color;          // Màu xe
     private String condition;      // Tình trạng: Mới/Cũ
 }

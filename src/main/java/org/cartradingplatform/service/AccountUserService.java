@@ -12,7 +12,7 @@ public interface AccountUserService {
     ProfileDTO updateUserProfile(Long id, UpdateUserRequestDTO dto, CustomUserDetails  currentUser);
     PageResponse<ProfileDTO> getAllUsers(String email, String roleName, Boolean isActive, Pageable pageable);
     ProfileDTO createUser(ProfileDTO dto);
-    ProfileDTO updateUserStatus(Long id, boolean active);
+    void deleteUser(Long id);
     void resetPassword(Long id, ResetPassword resetPassword);
 
 

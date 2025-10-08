@@ -2,6 +2,8 @@ package org.cartradingplatform.model.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Table(name = "favorite", uniqueConstraints = {@UniqueConstraint(columnNames = {"user_id", "post_id"})})

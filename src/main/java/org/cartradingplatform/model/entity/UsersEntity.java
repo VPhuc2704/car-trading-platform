@@ -6,6 +6,7 @@ import lombok.Setter;
 import org.cartradingplatform.model.enums.RoleName;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -40,4 +41,23 @@ public class UsersEntity extends BaseEntity{
 
     @Column(name = "suspension_end")
     private LocalDateTime suspensionEnd;
+
+
+    @OneToMany(mappedBy = "reporter", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<ReportEntity> reportsSent;
+
+    @OneToMany(mappedBy = "reportedUser", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<ReportEntity> reportsReceived;
+
+    @OneToMany(mappedBy = "handledBy", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<ReportEntity> reportsHandled;
+
+    @OneToMany(mappedBy = "seller", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<PostPaymentsEntity> postPayments;
+
+    @OneToMany(mappedBy = "seller", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<PostsEntity> posts;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<BlacklistedTokens> blacklistedTokens;
 }

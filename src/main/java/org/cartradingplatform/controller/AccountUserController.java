@@ -102,16 +102,15 @@ public class AccountUserController {
 
 
 
-    @PatchMapping("/admin/users/{id}/status")
-    public ResponseEntity<ApiResponse<ProfileDTO>> updateUserStatus(@PathVariable Long id,
-                                                                    @RequestParam boolean active,
-                                                                    HttpServletRequest request) {
+    @DeleteMapping("/admin/users/{id}")
+    public ResponseEntity<ApiResponse<String>> deleteUser(@PathVariable Long id,
+                                                              HttpServletRequest request) {
 
-        ProfileDTO updated = accountUserService.updateUserStatus(id, active);
+        accountUserService.deleteUser(id);
 
         return ResponseEntity.ok(
-                new ApiResponse<>("Cập nhật trạng thái user thành công",
-                        HttpStatus.OK.value(), updated, request.getRequestURI())
+                new ApiResponse<>("Xóa user thành công",
+                        HttpStatus.NO_CONTENT.value(), null, request.getRequestURI())
         );
     }
 

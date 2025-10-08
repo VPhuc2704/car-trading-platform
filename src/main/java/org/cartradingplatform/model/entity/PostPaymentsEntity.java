@@ -24,7 +24,7 @@ public class PostPaymentsEntity extends BaseEntity {
         @JoinColumn(name = "post_id", nullable = false)
         private PostsEntity post;
 
-        @ManyToOne
+        @ManyToOne(fetch = FetchType.LAZY, cascade =  CascadeType.ALL)
         @JoinColumn(name = "seller_id", nullable = false)
         private UsersEntity seller;
 

@@ -6,6 +6,8 @@ import lombok.*;
 import org.cartradingplatform.model.enums.PostStatus;
 import org.cartradingplatform.model.enums.SellerType;
 import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.type.SqlTypes;
 
 import java.math.BigDecimal;
@@ -48,7 +50,7 @@ public class PostsEntity extends  BaseEntity{
     @Column(columnDefinition = "json")
     private List<String> images;
 
-    @ManyToOne(fetch = FetchType.LAZY)  // Một seller có nhiều post
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)  // Một seller có nhiều post
     @JoinColumn(name = "seller_id", nullable = false)
     private UsersEntity seller;
 
@@ -62,4 +64,8 @@ public class PostsEntity extends  BaseEntity{
 
     @Column(name = "is_deleted", nullable = false)
     private Boolean isDeleted = false;
+
+    @OneToMany(mappedBy = "posts", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<FavoriteEntity> favorites;
+
 }
