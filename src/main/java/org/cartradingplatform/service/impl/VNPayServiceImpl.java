@@ -135,7 +135,12 @@ public class VNPayServiceImpl implements VNPayService {
         postPaymentsRepository.save(payment);
         postsRepository.save(post); // Lưu lại trạng thái bài viết
 
-        String redirectUrl =  vnPayConfig.vnp_ReturnUrl() + "/?status=" + ("00".equals(responseCode) ? "success" : "failed");
+
+//        String redirectUrl =  vnPayConfig.vnp_ReturnUrl() + "/?status=" + ("00".equals(responseCode) ? "success" : "failed");
+
+        String queryString = request.getQueryString();
+
+        String redirectUrl = vnPayConfig.vnp_ReturnUrl() + "?" + queryString;
 
         return ResponseEntity.status(302)
                 .header("Location", redirectUrl)

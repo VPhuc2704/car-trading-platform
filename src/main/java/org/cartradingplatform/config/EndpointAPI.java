@@ -8,6 +8,7 @@ public class EndpointAPI {
             "/api/vnpayment/return/**",
             "/api/public/posts/**",
             "/api/reviews/seller/{sellerId}",
+            "/post/img/**"
     };
 
     public  static final String[] PRIVATE_ENDPOINTS = {
