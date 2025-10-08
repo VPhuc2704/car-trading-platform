@@ -4,6 +4,7 @@ package org.cartradingplatform.model.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.cartradingplatform.model.enums.PostStatus;
+import org.cartradingplatform.model.enums.SellerType;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -35,6 +36,13 @@ public class PostsEntity extends  BaseEntity{
 
     @Column(name = "location", length = 100)
     private String location;
+
+    @Column(name = "phone_conact")
+    private String phoneContact;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "seller_type")
+    private SellerType sellerType;
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "json")

@@ -13,10 +13,7 @@ import org.cartradingplatform.model.entity.CarDetailEntity;
 import org.cartradingplatform.model.entity.PostPaymentsEntity;
 import org.cartradingplatform.model.entity.PostsEntity;
 import org.cartradingplatform.model.entity.UsersEntity;
-import org.cartradingplatform.model.enums.PaymentMethod;
-import org.cartradingplatform.model.enums.PaymentStatus;
-import org.cartradingplatform.model.enums.PostStatus;
-import org.cartradingplatform.model.enums.RoleName;
+import org.cartradingplatform.model.enums.*;
 import org.cartradingplatform.model.mapper.PostMapper;
 import org.cartradingplatform.repository.PostPaymentsRepository;
 import org.cartradingplatform.repository.PostsRepository;
@@ -152,6 +149,8 @@ public class PostServiceImpl implements PostService {
         if (dto.getPrice() != null) post.setPrice(dto.getPrice());
         if (dto.getLocation() != null) post.setLocation(dto.getLocation());
         if (dto.getImages() != null) post.setImages(new ArrayList<>(dto.getImages()));
+        if (dto.getPhoneContact() != null) post.setPhoneContact(dto.getPhoneContact());
+        if (dto.getSellerType() != null) post.setSellerType(SellerType.valueOf(dto.getSellerType()));
 
         // update car detail
         if (dto.getCarDetailDTO() != null) {
@@ -163,7 +162,6 @@ public class PostServiceImpl implements PostService {
             if (carDTO.getYear() != null) carDetail.setYear(carDTO.getYear());
             if (carDTO.getMileage() != null) carDetail.setMileage(carDTO.getMileage());
             if (carDTO.getFuelType() != null) carDetail.setFuelType(carDTO.getFuelType());
-            if (carDTO.getEngineCapacity() != null) carDetail.setEngineCapacity(carDTO.getEngineCapacity());
             if (carDTO.getTransmission() != null) carDetail.setTransmission(carDTO.getTransmission());
             if (carDTO.getColor() != null) carDetail.setColor(carDTO.getColor());
             if (carDTO.getCondition() != null) carDetail.setCondition(carDTO.getCondition());

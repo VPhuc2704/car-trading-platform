@@ -5,6 +5,8 @@ import lombok.*;
 
 import java.math.BigDecimal;
 
+
+
 @Entity
 @Table(name = "car_details")
 @Getter
@@ -35,9 +37,6 @@ public class CarDetailEntity {
 
     @Column(name = "transmission", length = 50)
     private String transmission;    // Hộp số
-
-    @Column(name = "engine_capacity", precision = 4, scale = 1)
-    private BigDecimal engineCapacity;  // Dung tích động cơ (ví dụ: 1.5, 2.0)
 
     @Column(name = "color", length = 50)
     private String color;           // Màu xe

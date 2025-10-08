@@ -12,7 +12,6 @@ public class CarDetailMapper {
                 .mileage(carDetailEntity.getMileage())
                 .fuelType(carDetailEntity.getFuelType())
                 .transmission(carDetailEntity.getTransmission())
-                .engineCapacity(carDetailEntity.getEngineCapacity())
                 .color(carDetailEntity.getColor())
                 .condition(carDetailEntity.getCondition())
                 .build();
@@ -27,7 +26,6 @@ public class CarDetailMapper {
                 .mileage(dto.getMileage())
                 .fuelType(dto.getFuelType())
                 .transmission(dto.getTransmission())
-                .engineCapacity(dto.getEngineCapacity())
                 .color(dto.getColor())
                 .condition(dto.getCondition())
                 .build();

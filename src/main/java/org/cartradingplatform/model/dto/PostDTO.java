@@ -23,6 +23,8 @@ public class PostDTO {
     private BigDecimal price;
     private String status;
     private String location;
+    private String phoneContact;
+    private String sellerType;
     private List<String> images = new ArrayList<>();;
     private CarDetailDTO carDetailDTO;
     private LocalDateTime createdAt;
