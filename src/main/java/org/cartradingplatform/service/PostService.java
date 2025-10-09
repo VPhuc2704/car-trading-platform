@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Map;
 
 public interface PostService {
-    PageResponse<PostDTO> getPublicPosts(Pageable pageable);
 
     //Seller
     PostWithPaymentResponse createPost(Long sellerId, PostDTO dto) throws UnsupportedEncodingException;
@@ -32,6 +31,9 @@ public interface PostService {
     // Cả hai
     PostDTO updatePostStatus(Long postId, PostStatus newStatus, CustomUserDetails currentUser);
 
+    //public
+    PageResponse<PostDTO> getPublicPosts(Pageable pageable);
+    PostDTO getPublicPostById(Long postId);
     ApiResponse<List<PostDTO>> searchCars(Map<String, String> params);
 
 }

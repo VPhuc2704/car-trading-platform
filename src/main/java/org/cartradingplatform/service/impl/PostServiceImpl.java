@@ -44,26 +44,6 @@ public class PostServiceImpl implements PostService {
     private final PostPaymentsRepository paymentsRepository;
     private final VNPayService vnPayService;
 
-    @Override
-    public PageResponse<PostDTO> getPublicPosts(Pageable pageable) {
-        Page<PostsEntity> posts = postsRepository.findByIsDeletedFalseAndStatus(PostStatus.APPROVED, pageable);
-
-        List<PostDTO> content = posts.getContent()
-                .stream()
-                .map(PostMapper::toDTO)
-                .collect(Collectors.toList());
-
-        return new PageResponse<>(
-                content,
-                posts.getNumber(),
-                posts.getSize(),
-                posts.getTotalElements(),
-                posts.getTotalPages(),
-                posts.isFirst(),
-                posts.isLast()
-        );
-    }
-
     // Tạo bài đăng
     @Override
     public PostWithPaymentResponse createPost(Long sellerId, PostDTO dto) throws UnsupportedEncodingException {
@@ -203,7 +183,7 @@ public class PostServiceImpl implements PostService {
     }
 
 //    ==================================================================================================================
-//    ADMIN
+//                                                      ADMIN
 
     @Override
     public PageResponse<PostDTO> getAllPosts(PostStatus status, Pageable pageable) {
@@ -289,8 +269,39 @@ public class PostServiceImpl implements PostService {
         return  PostMapper.toDTO(postsRepository.save(post));
     }
 
-
+    //    ====================================================================================================================
+    //                                                       PUBLIC
     private final EntityManager entityManager;
+
+    @Override
+    public PageResponse<PostDTO> getPublicPosts(Pageable pageable) {
+        Page<PostsEntity> posts = postsRepository.findByIsDeletedFalseAndStatus(PostStatus.APPROVED, pageable);
+
+        List<PostDTO> content = posts.getContent()
+                .stream()
+                .map(PostMapper::toDTO)
+                .collect(Collectors.toList());
+
+        return new PageResponse<>(
+                content,
+                posts.getNumber(),
+                posts.getSize(),
+                posts.getTotalElements(),
+                posts.getTotalPages(),
+                posts.isFirst(),
+                posts.isLast()
+        );
+    }
+
+    @Override
+    public PostDTO getPublicPostById(Long postId) {
+        PostsEntity post = postsRepository.findById(postId).orElseThrow(() -> new PostException("Bài viết không tìm thấy"));
+        if (Boolean.TRUE.equals(post.getIsDeleted()) || post.getStatus() != PostStatus.APPROVED) {
+            throw new PostException("Bài viết không tồn tại");
+        }
+        return PostMapper.toDTO(post);
+    }
+
 
     @Override
     public ApiResponse<List<PostDTO>> searchCars(Map<String, String> params) {
