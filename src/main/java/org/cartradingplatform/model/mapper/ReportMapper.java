@@ -14,6 +14,7 @@ public class ReportMapper {
                 .reportedUserId(entity.getReportedUser() != null ? entity.getReportedUser().getId() : null)
                 .reportedUserName(entity.getReportedUser() != null ? entity.getReportedUser().getFullName() : null)
                 .reason(entity.getReason())
+                .description(entity.getDescription())
                 .status(entity.getStatus().name())
                 .createdAt(entity.getCreatedAt())
                 .handledAt(entity.getHandledAt())

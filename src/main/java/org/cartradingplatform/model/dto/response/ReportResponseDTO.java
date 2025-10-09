@@ -14,6 +14,7 @@ public class ReportResponseDTO {
     private Long reportedUserId;
     private String reportedUserName;
     private String reason;
+    private String description;
     private String status;
     private LocalDateTime createdAt;
     private LocalDateTime handledAt;

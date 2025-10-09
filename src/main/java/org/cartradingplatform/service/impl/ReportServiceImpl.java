@@ -33,13 +33,27 @@ public class ReportServiceImpl implements ReportService {
                 .orElseThrow(() -> new ReportException("Không tìm thấy người báo cáo"));
 
         // Người bị báo cáo lấy từ DTO
-        UsersEntity reportedUser = userRepository.findById(dto.getReportedUserId())
-                .orElseThrow(() -> new ReportException("Không tìm thấy người bị báo cáo"));
+//        UsersEntity reportedUser = userRepository.findById(dto.getReportedUserId())
+//                .orElseThrow(() -> new ReportException("Không tìm thấy người bị báo cáo"));
+
+
+        UsersEntity reportedUser = null;
+
+        if (dto.getReportedUserId() != null) {
+            reportedUser = userRepository.findById(dto.getReportedUserId())
+                    .orElseThrow(() -> new ReportException("Không tìm thấy người bị báo cáo theo ID"));
+        } else if (dto.getReportedUserEmail() != null) {
+            reportedUser = userRepository.findByEmail(dto.getReportedUserEmail())
+                    .orElseThrow(() -> new ReportException("Không tìm thấy người bị báo cáo theo email"));
+        } else {
+            throw new ReportException("Thiếu thông tin để xác định người bị báo cáo (ID / Email /)");
+        }
 
         ReportEntity report = ReportEntity.builder()
                 .reporter(reporter)
                 .reportedUser(reportedUser)
                 .reason(dto.getReason())
+                .description(dto.getDescription())
                 .status(ReportStatus.PENDING)
                 .build();
 

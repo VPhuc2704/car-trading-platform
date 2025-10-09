@@ -1,6 +1,7 @@
 package org.cartradingplatform.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.cartradingplatform.model.dto.requests.ReportRequestDTO;
 import org.cartradingplatform.model.dto.response.ReportResponseDTO;
@@ -19,6 +20,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/reports")
 @RequiredArgsConstructor
+@RestControllerAdvice
 public class ReportController {
     private final ReportService reportService;
 
@@ -26,7 +28,7 @@ public class ReportController {
     @PostMapping("/create")
     public ResponseEntity<ApiResponse<ReportResponseDTO>> createReport(
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            @RequestBody ReportRequestDTO request,
+            @Valid @RequestBody ReportRequestDTO request,
             HttpServletRequest httpServletRequest) {
 
         ReportResponseDTO result = reportService.createReport(userDetails.getUser().getId(), request);
