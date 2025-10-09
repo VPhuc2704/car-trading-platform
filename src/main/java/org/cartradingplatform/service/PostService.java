@@ -2,6 +2,7 @@ package org.cartradingplatform.service;
 
 import org.cartradingplatform.model.dto.PageResponse;
 import org.cartradingplatform.model.dto.PostDTO;
+import org.cartradingplatform.model.dto.response.PostAndInfoSellerDTO;
 import org.cartradingplatform.model.dto.response.PostWithPaymentResponse;
 import org.cartradingplatform.model.enums.PaymentMethod;
 import org.cartradingplatform.model.enums.PostStatus;
@@ -33,7 +34,7 @@ public interface PostService {
 
     //public
     PageResponse<PostDTO> getPublicPosts(Pageable pageable);
-    PostDTO getPublicPostById(Long postId);
+    PostAndInfoSellerDTO getPublicPostById(Long postId);
     ApiResponse<List<PostDTO>> searchCars(Map<String, String> params);
 
 }

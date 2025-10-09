@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.cartradingplatform.model.dto.PageResponse;
 import org.cartradingplatform.model.dto.PostDTO;
+import org.cartradingplatform.model.dto.response.PostAndInfoSellerDTO;
 import org.cartradingplatform.service.PostService;
 import org.cartradingplatform.utils.ApiResponse;
 import org.springframework.data.domain.PageRequest;
@@ -38,11 +39,11 @@ public class PublicPostController {
     }
 
     @GetMapping("/{postId}")
-    public ResponseEntity<ApiResponse<PostDTO>> getPublicPosts(@PathVariable(name = "postId") Long postId,
-                                                                             HttpServletRequest request) {
+    public ResponseEntity<ApiResponse<PostAndInfoSellerDTO>> getPublicPosts(@PathVariable(name = "postId") Long postId,
+                                                                            HttpServletRequest request) {
         return ResponseEntity.ok(
                 new ApiResponse<>(
-                        "Danh sách bài đăng",
+                        "Bài đăng chi tiết:",
                         HttpStatus.OK.value(),
                         postService.getPublicPostById(postId),
                         request.getRequestURI()

@@ -8,6 +8,7 @@ import org.cartradingplatform.exceptions.PostException;
 import org.cartradingplatform.model.dto.CarDetailDTO;
 import org.cartradingplatform.model.dto.PageResponse;
 import org.cartradingplatform.model.dto.PostDTO;
+import org.cartradingplatform.model.dto.response.PostAndInfoSellerDTO;
 import org.cartradingplatform.model.dto.response.PostWithPaymentResponse;
 import org.cartradingplatform.model.entity.CarDetailEntity;
 import org.cartradingplatform.model.entity.PostPaymentsEntity;
@@ -15,6 +16,7 @@ import org.cartradingplatform.model.entity.PostsEntity;
 import org.cartradingplatform.model.entity.UsersEntity;
 import org.cartradingplatform.model.enums.*;
 import org.cartradingplatform.model.mapper.PostMapper;
+import org.cartradingplatform.model.mapper.SellerInforMapper;
 import org.cartradingplatform.repository.PostPaymentsRepository;
 import org.cartradingplatform.repository.PostsRepository;
 import org.cartradingplatform.repository.UserRepository;
@@ -294,12 +296,16 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public PostDTO getPublicPostById(Long postId) {
+    public PostAndInfoSellerDTO getPublicPostById(Long postId) {
         PostsEntity post = postsRepository.findById(postId).orElseThrow(() -> new PostException("Bài viết không tìm thấy"));
         if (Boolean.TRUE.equals(post.getIsDeleted()) || post.getStatus() != PostStatus.APPROVED) {
             throw new PostException("Bài viết không tồn tại");
         }
-        return PostMapper.toDTO(post);
+
+        PostAndInfoSellerDTO response = new PostAndInfoSellerDTO();
+        response.setPost(PostMapper.toDTO(post));
+        response.setSellerInfo(SellerInforMapper.toPublicDTO(post.getSeller()));
+        return response;
     }
 
 
