@@ -42,11 +42,17 @@ public class ReportServiceImpl implements ReportService {
         if (dto.getReportedUserId() != null) {
             reportedUser = userRepository.findById(dto.getReportedUserId())
                     .orElseThrow(() -> new ReportException("Không tìm thấy người bị báo cáo theo ID"));
-        } else if (dto.getReportedUserEmail() != null) {
+        }
+        else if (dto.getReportedUserEmail() != null && !dto.getReportedUserEmail().isBlank()) {
             reportedUser = userRepository.findByEmail(dto.getReportedUserEmail())
                     .orElseThrow(() -> new ReportException("Không tìm thấy người bị báo cáo theo email"));
-        } else {
-            throw new ReportException("Thiếu thông tin để xác định người bị báo cáo (ID / Email /)");
+        }
+        else if (dto.getReportedUserphone() != null && !dto.getReportedUserphone().isBlank()) {
+            reportedUser = userRepository.findByNumberPhone(dto.getReportedUserphone())
+                    .orElseThrow(() -> new ReportException("Không tìm thấy người bị báo cáo theo số điện thoại"));
+        }
+        else {
+            throw new ReportException("Thiếu thông tin để xác định người bị báo cáo (cần ID, email hoặc số điện thoại)");
         }
 
         ReportEntity report = ReportEntity.builder()

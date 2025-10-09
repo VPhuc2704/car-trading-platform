@@ -15,6 +15,7 @@ import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<UsersEntity,Long> {
     Optional<UsersEntity> findByEmail(String email);
+    Optional<UsersEntity> findByNumberPhone(String numberPhone);
     boolean existsByEmail(String email);
 
     @Query("SELECT u FROM UsersEntity u " +
