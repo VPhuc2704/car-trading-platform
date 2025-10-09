@@ -18,7 +18,7 @@ public enum PostStatus {
     }
 
     public boolean canSellerEdit(){
-        return this == DRAFT || this == REJECTED;
+        return this == DRAFT || this == PENDING || this == REJECTED;
     }
 
     // Rule cho seller
