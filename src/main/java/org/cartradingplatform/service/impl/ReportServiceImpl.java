@@ -90,8 +90,8 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
-    public List<ReportResponseDTO> getAllPendingReports() {
-        return reportRepository.findByStatus(ReportStatus.PENDING)
+    public List<ReportResponseDTO> getAllReports() {
+        return reportRepository.findAll()
                 .stream()
                 .map(ReportMapper::toDTO)
                 .collect(Collectors.toList());

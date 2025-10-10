@@ -22,12 +22,12 @@ public class AdminReportController {
     private final ReportService reportService;
 
 
-    @GetMapping("/pending")
-    public ResponseEntity<ApiResponse<List<ReportResponseDTO>>> getPendingReports(HttpServletRequest request) {
-        List<ReportResponseDTO> reports = reportService.getAllPendingReports();
+    @GetMapping("/all")
+    public ResponseEntity<ApiResponse<List<ReportResponseDTO>>> getAllReports(HttpServletRequest request) {
+        List<ReportResponseDTO> reports = reportService.getAllReports();
 
         ApiResponse<List<ReportResponseDTO>> response = new ApiResponse<>(
-                "Danh sách báo cáo đang chờ xử lý",
+                "Danh sách báo cáo người dùng",
                 HttpStatus.OK.value(),
                 reports,
                 request.getRequestURI()
